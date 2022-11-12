@@ -1,2 +1,2 @@
 # WebServer
-Web Server from scratch
+HTTP Web Server from scratch
