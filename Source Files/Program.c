@@ -68,13 +68,13 @@ char* parseRequest(char* request)
             return serializeResponse("400 NOT FOUND","text/pic", "");
         }
     } 
-    else if (strcmp(type,"PUT"))
+    else if (strcmp(type,"DELETE"))
     {
 
     } 
     else 
     {
-        return serializeResponse("40 NOT IMPLEMENTED","text/plain", "");
+        return serializeResponse("405 NOT IMPLEMENTED","text/plain", "");
     }
 }
 /*
