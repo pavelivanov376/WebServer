@@ -9,8 +9,10 @@
 
 char* serializeResponse(char* status, char* contentType, char* body);
 char* parseRequest(char* request);
-char* getRequestType(char* request);
-char* getRequestedResource(char* request);
+
+char* filename = "image.html";
+
+char* html = "<!DOCTYPE html><html><head><title>KM</title></head><body><p>You requested HTML</p></body></html>";
 
 int main(int argc, char const *argv[])
 {
@@ -27,6 +29,7 @@ int main(int argc, char const *argv[])
     bind(server_fd, (struct sockaddr *)&address, addrlen);
     
     listen(server_fd, 10);
+
     while(1)
     {
         int new_socket = accept(server_fd, (struct sockaddr *)&address, (socklen_t*)&addrlen);
@@ -36,78 +39,67 @@ int main(int argc, char const *argv[])
 
         char *httpResponse = parseRequest(httpRequest);
         
-       // char *httpResponse = serializeResponse("200 OK","text/plain", "Hello world!");//"HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 12\n\nHello world!";
+        //char *httpResponse = serializeResponse("200 OK","text/plain", "Hello world!");//"HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 12\n\nHello world!";
         write(new_socket , httpResponse , strlen(httpResponse));
   
         close(new_socket);
     }
     return 0;
 }
-
+    /*
+GET /index.html HTTP/1.1
+    */
 char* parseRequest(char* request)
 {
-    char* type = getRequestType(request);
-    char * resource = getRequestedResource(request);
+    char * requestMethod = strtok(request, " ");
 
-    if (strcmp(type,"GET"))
+    char * resource = strtok(NULL, " ");
+
+    char * version = strtok(NULL, " ");
+
+    if (strcmp(requestMethod,"GET"))
     {
         if (strcmp(resource,"/index.html"))
         {
-            return serializeResponse("200 OK","text/plain", "hello text");
+        return serializeResponse("200 OK","text/plain", "You requested plain text");
         }
         else if (strcmp(resource,"/home.html"))
         {
-            return serializeResponse("200 OK","text/html", "Hello HTML");
+            return serializeResponse("200 OK","text/html", html);
         }
-        else if (strcmp(resource,"/pic.jpg"))
+        else if (strcmp(resource,"/image.html"))
         {
-            return serializeResponse("200 OK","text/pic", "Hello PIC");
+            char * buffer = 0;
+            long length;
+            FILE * f = fopen (filename, "rb");
+
+            if (f)
+            {
+                fseek (f, 0, SEEK_END);
+                length = ftell (f);
+                fseek (f, 0, SEEK_SET);
+                buffer = malloc (length);
+                if (buffer)
+                {
+                    fread (buffer, 1, length, f);
+                }
+                fclose (f);
+            }
+            return serializeResponse("200 OK","text/pic", buffer);
         }
         else
         {
-            return serializeResponse("400 NOT FOUND","text/pic", "");
+            return serializeResponse("404 NOT FOUND","text/pic", "");
         }
     } 
-    else if (strcmp(type,"DELETE"))
+    else if (strcmp(requestMethod,"DELETE"))
     {
 
     } 
     else 
     {
-        return serializeResponse("405 NOT IMPLEMENTED","text/plain", "");
+        return serializeResponse("401 NOT IMPLEMENTED","text/plain", "");
     }
-}
-/*
-GET /index.html HTTP/1.1
-Host: localhost:8080
-Connection: keep-alive
-Cache-Control: max-age=0
-sec-ch-ua: " Not;A Brand";v="99", "Google Chrome";v="97", "Chromium";v="97"
-sec-ch-ua-mobile: ?0
-sec-ch-ua-platform: "Linux"
-DNT: 1
-Upgrade-Insecure-Requests: 1
-User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.99 Safari/537.36
-Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,**;q=0.8,application/signed-exchange;v=b3;q=0.9
-Sec-Fetch-Site: none
-Sec-Fetch-Mode: navigate
-Sec-Fetch-User: ?1
-Sec-Fetch-Dest: document
-Accept-Encoding: gzip, deflate, br
-Accept-Language: en,bg;q=0.9
-*/
-char* getRequestType(char* request)
-{
-    char string[50] = "Hello! We are learning about strtok";
-    char * token = strtok(string, " ");
-    token = strtok(NULL, " ");
-
-    //char * type = strtok(request, " ");  //    GET
-    // char * resource = strtok(request, " "); //    /index.html
-}
-char* getRequestedResource(char* request)
-{
-   // char * resource = strtok(request, " "); //    /index.html
 }
 
 char* serializeResponse(char* status, char* contentType, char* body)
