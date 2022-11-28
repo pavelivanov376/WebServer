@@ -57,35 +57,35 @@ char* parseRequest(char* request)
 
     char * version = strtok(NULL, " ");
 
-    if (strcmp(requestMethod,"GET"))
+    if (strcmp(requestMethod,"GET") == 0)
     {
-        if (strcmp(resource,"/index.html"))
+        if (strcmp(resource,"/index.html") == 0)
         {
-        return serializeResponse("200 OK","text/plain", "You requested plain text");
+            return serializeResponse("200 OK","text/plain", "You requested plain text");
         }
-        else if (strcmp(resource,"/home.html"))
+        else if (strcmp(resource,"/home.html") == 0)
         {
             return serializeResponse("200 OK","text/html", html);
         }
-        else if (strcmp(resource,"/image.html"))
+        else if (strcmp(resource,"/image.html") == 0)
         {
-            char * buffer = 0;
-            long length;
-            FILE * f = fopen (filename, "rb");
-
-            if (f)
-            {
-                fseek (f, 0, SEEK_END);
-                length = ftell (f);
-                fseek (f, 0, SEEK_SET);
-                buffer = malloc (length);
-                if (buffer)
-                {
-                    fread (buffer, 1, length, f);
-                }
-                fclose (f);
-            }
-            return serializeResponse("200 OK","text/pic", buffer);
+            FILE    *textfile;
+            char    *image;
+            long    numbytes;
+            
+            textfile = fopen(filename, "r");
+            
+            fseek(textfile, 0L, SEEK_END);
+            numbytes = ftell(textfile);
+            fseek(textfile, 0L, SEEK_SET);  
+        
+            image = (char*)calloc(numbytes, sizeof(char));   
+            
+            fread(image, sizeof(char), numbytes, textfile);
+            fclose(textfile);
+           
+            return serializeResponse("200 OK","text/html", image);
+            
         }
         else
         {
@@ -94,7 +94,10 @@ char* parseRequest(char* request)
     } 
     else if (strcmp(requestMethod,"DELETE"))
     {
-
+        if (strcmp(resource,"/image.html") == 0)
+        {
+            remove(filename);
+        }
     } 
     else 
     {
