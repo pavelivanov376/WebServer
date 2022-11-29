@@ -36,10 +36,8 @@ int main(int argc, char const *argv[])
         
         char httpRequest[30000] = {0};
         long valread = read( new_socket , httpRequest, 30000);
-
         char *httpResponse = parseRequest(httpRequest);
         
-        //char *httpResponse = serializeResponse("200 OK","text/plain", "Hello world!");//"HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 12\n\nHello world!";
         write(new_socket , httpResponse , strlen(httpResponse));
   
         close(new_socket);
