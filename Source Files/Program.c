@@ -83,7 +83,6 @@ char* parseRequest(char* request)
             fclose(textfile);
            
             return serializeResponse("200 OK","text/html", image);
-            
         }
         else
         {
