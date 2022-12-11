@@ -11,7 +11,6 @@ char* serializeResponse(char* status, char* contentType, char* body);
 char* parseRequest(char* request);
 
 char* filename = "image.html";
-
 char* html = "<!DOCTYPE html><html><head><title>KM</title></head><body><p>You requested HTML</p></body></html>";
 
 int main(int argc, char const *argv[])
