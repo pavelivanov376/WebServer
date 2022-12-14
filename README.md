@@ -1,2 +1,2 @@
 # WebServer
-HTTP Web Server from scratch
+HTTP Web Server from scratch using TCP sockets.
